@@ -61,7 +61,7 @@ namespace DungeonGame
                 }
                 else if (playerInput == "Q")
                 {
-                    Program.Quit();
+                    Dungeon.Quit();
                 }
             }
         }

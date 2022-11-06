@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace DungeonGame
 {
-    public class Encounters
+    public class Rooms
+
     {
         static Random rand = new Random();
 
@@ -16,7 +17,7 @@ namespace DungeonGame
             Console.WriteLine("You slowly open the door and hear some noise. The room stinks of mold and rotten eggs.");
             Console.WriteLine("The monster turns towards you...");
             Console.ReadKey();
-            Combat(false, "Human Rogue", 1, 4);
+            Combat(false, "Human Rogue", 2, 7);
         }
 
         public static void BasicFightEncounter()
@@ -31,10 +32,10 @@ namespace DungeonGame
         {
             Console.Clear();
             Console.WriteLine("The door slowly creaks open and you peer into a dark room. You see a tall shadow...");
-            Combat(false, "Dark Wizard", 4, 2);
+            Combat(false, "Dark Wizard", 6, 2);
         }
 
-
+        
         //you can make several encounters and add to random
         public static void RandomEncounter()
         {
@@ -46,6 +47,8 @@ namespace DungeonGame
                 case 1:
                     WizardEncounter();
                     break;
+                
+
             }
         }
 
@@ -72,8 +75,8 @@ namespace DungeonGame
             if (random)
             {
                 _name = GetName();
-                _power = Program.currentPlayer.GetPower();
-                _health = Program.currentPlayer.GetHealth();
+                _power = Dungeon.currentPlayer.GetPower();
+                _health = Dungeon.currentPlayer.GetHealth();
             }
             else
             {
@@ -88,20 +91,20 @@ namespace DungeonGame
                 Console.WriteLine("Monster Power: " + _power + " Monster Health: " + _health);
                 Console.WriteLine(dungeonMenu);
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Health: " + Program.currentPlayer.health);
+                Console.WriteLine("Health: " + Dungeon.currentPlayer.health);
                 string userChoice = Console.ReadLine();
 
                 if (userChoice == "A")
                 {
                     //Attack
                     Console.WriteLine(" You surge forth with your weapon in hand!");
-                    int damage = _power - Program.currentPlayer.block;
+                    int damage = _power - Dungeon.currentPlayer.block;
                     if (damage < 0)
                         damage = 0;
-                    int attack = rand.Next(0, Program.currentPlayer.weaponValue) + rand.Next(1, 6) + ((Program.currentPlayer.currentClass == Player.PlayerClass.Warrior) ? 2 : 0);
+                    int attack = rand.Next(0, Dungeon.currentPlayer.weaponValue) + rand.Next(1, 6) + ((Dungeon.currentPlayer.currentClass == Player.PlayerClass.Warrior) ? 2 : 0);
                     //Warrior gets 2 damage points, if not + 0
-                    Console.WriteLine(" You lose " + damage + " health. You cause " + attack + " damage");
-                    Program.currentPlayer.health -= damage;
+                    Console.WriteLine(" You lose " + damage + " health. You cause " + attack + " damage!");
+                    Dungeon.currentPlayer.health -= damage;
                     _health -= attack;
                 }
                 else if (userChoice == "B")
@@ -109,25 +112,25 @@ namespace DungeonGame
                     //Block
 
                     Console.WriteLine(_name + " is about to strike but you block the hit.");
-                    int damage = (_power / 6) - Program.currentPlayer.block;
+                    int damage = (_power / 6) - Dungeon.currentPlayer.block;
                     if (damage < 0)
                         damage = 0;
-                    int attack = rand.Next(0, Program.currentPlayer.weaponValue) / 2;
+                    int attack = rand.Next(0, Dungeon.currentPlayer.weaponValue) / 2;
                     Console.WriteLine(" You lose " + damage + " health. You cause " + attack + " damage!");
-                    Program.currentPlayer.health -= damage;
+                    Dungeon.currentPlayer.health -= damage;
                     _health -= attack;
                 }
                 else if (userChoice == "R")
                 {
                     //Run
-                    if (Program.currentPlayer.currentClass != Player.PlayerClass.Solider && rand.Next(0, 2) == 0)
+                    if (Dungeon.currentPlayer.currentClass != Player.PlayerClass.Solider && rand.Next(0, 2) == 0)
                     {
                         Console.WriteLine(" As you run away from " + _name + ", it knocks you in the head and you fall to the ground.");
-                        int damage = _power - Program.currentPlayer.block;
+                        int damage = _power - Dungeon.currentPlayer.block;
                         if (damage < 0)
                             damage = 0;
                         Console.WriteLine(" You lose " + damage + " health and unable to escape.");
-                        Console.ReadKey();
+                        Dungeon.currentPlayer.health -= damage;
                     }
                     else
                     {
@@ -140,19 +143,19 @@ namespace DungeonGame
                     //Collect Coins
                     Console.WriteLine("You collect the coins!");
                     //int treasure =+ coins;
-                    Console.ReadKey();
+                   
                 }
                 else if (userChoice == "P")
                 {
                     //Player Info
-                    Console.WriteLine(" You are " + _name + "Your health is: " + _health);
-                    Console.ReadKey();
+                    Console.WriteLine(" You are " + _name + "Your health is: " + _health + "!");
+                   
                 }
                 else if (userChoice == "M")
                 {
                     //Player Info
-                    Console.WriteLine(" You are " + _name + " ." + " Your health is: " + _health);
-                    Console.ReadKey();
+                    Console.WriteLine(" You are " + _name + " ." + " Your health is: " + _health + "!");
+                    
                 }
                 else if (userChoice == "E")
                 {
@@ -160,26 +163,27 @@ namespace DungeonGame
                     break;
 
                 }
-                Console.ReadKey();
+                //Console.ReadKey();
 
-                if (Program.currentPlayer.health <= 0)
+                if (Dungeon.currentPlayer.health <= 0)
                 {
                     //Player dies code
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("You have been defeated by " + _name + "!");
                     Console.WriteLine("GAME OVER!!!");
+                    Console.ReadKey();
                     System.Environment.Exit(0);
                 }
                 Console.ReadKey();
             }
-            int _coins = Program.currentPlayer.GetCoins();
-            int _xp = Program.currentPlayer.GetXP();
+            int _coins = Dungeon.currentPlayer.GetCoins();
+            int _xp = Dungeon.currentPlayer.GetXP();
             Console.WriteLine("You have conquered " + _name + " and you have won " + _coins + " gold coins! You have gained " + _xp + "XP!");
-            Program.currentPlayer.coins += _coins;
-            Program.currentPlayer.xp += _xp;
+            Dungeon.currentPlayer.coins += _coins;
+            Dungeon.currentPlayer.xp += _xp;
 
-            if (Program.currentPlayer.CanLevelUp())
-                Program.currentPlayer.LevelUp();
+            if (Dungeon.currentPlayer.CanLevelUp())
+                Dungeon.currentPlayer.LevelUp();
 
             Console.ReadKey();
         }

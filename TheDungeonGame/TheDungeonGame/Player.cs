@@ -77,9 +77,10 @@ namespace DungeonGame
                 xp -= GetLevelUpValue();
                 playerLevel++;
             }
+            Console.Clear();
             Console.ForegroundColor = ConsoleColor.Red;
-            Program.Print("YOU ARE KILLING IT!!! YOU HAVE ADVANCED TO THE NEXT LEVEL.");
-            Program.Print("LEVEL: " + playerLevel);
+            Dungeon.Print("YOU ARE KILLING IT!!! YOU HAVE ADVANCED TO THE NEXT LEVEL.");
+            Dungeon.Print("LEVEL: " + playerLevel);
         }
 
 

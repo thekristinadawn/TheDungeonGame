@@ -8,7 +8,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace DungeonGame
 {
-    public class Program
+    public class Dungeon
     {
         public static Player currentPlayer = new Player();
         public static bool mainLoop = true;
@@ -20,11 +20,11 @@ namespace DungeonGame
             }
             currentPlayer = Load(out bool newP);
             if (newP)
-                Encounters.FirstEncounter();
+                Rooms.FirstEncounter();
 
             while (mainLoop)
             {
-                Encounters.RandomEncounter();
+                Rooms.RandomEncounter();
             }
 
         }
@@ -56,20 +56,23 @@ namespace DungeonGame
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(titleGame);
             Console.WriteLine(gameDescription);
+ 
+            string playerMenu = @"
+            
+                --------------------------------
+                |  Choose whom you want to be: |
+                |  K) KNIGHT                   |
+                |  R) RANGER                   |
+                |  S) SOLDIER                  |
+                |  W) WARRIOR                  |
+                --------------------------------";
+
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("Enter your name:");
 
-            string[] playerMenu =
-            {
-                "--------------------------------",
-                "|  Choose whom you want to be: |",
-                "|  K) KNIGHT                   |",
-                "|  R) RANGER                   |",
-                "|  S) SOLDIER                  |",
-                "|  W) WARRIOR                  |",
-                "--------------------------------\n"
-            };
+            string savedName = Console.ReadLine();
 
+            Console.WriteLine("Choose your player:");
             Console.WriteLine(playerMenu);
             bool flag = false;
 
@@ -116,7 +119,6 @@ namespace DungeonGame
         {
             newP = false;
             Console.Clear();
-            Console.WriteLine("Choose your player:");
             string[] paths = Directory.GetFiles("saves");
             List<Player> players = new List<Player>();
             int idCount = 0;
@@ -135,14 +137,14 @@ namespace DungeonGame
             while (true)
             {
                 Console.Clear();
-                Print("Choose your player:", 60); //the number is how fast it "types"
+                Print("Please enter player name or ID (id:# or Name). To create a new player, enter 'create'. ", 60); //the number is how fast it "types"
 
                 foreach (Player p in players)
                 {
                     Console.WriteLine(p.playerID + " : " + p.name + " : Block Value:" + p.block + " : Weapon Value:" + p.weaponValue);
                 }
 
-                Print("Please enter player name or ID (id:# or Name). To create a new player, enter 'create'. ", 40);
+
                 string[] enterInput = Console.ReadLine().Split(':');
 
                 try
