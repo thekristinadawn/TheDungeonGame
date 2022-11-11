@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace DungeonGame
 {
     [Serializable]
-    public class Player
+    public class Character
     {
 
         Random rand = new Random();
@@ -15,23 +15,26 @@ namespace DungeonGame
         public string name;
         public int playerID;
         public int coins = 0;
-        public int health = 25;
+        public int health = 20;
         public int hitChance;
-        public int minDamage;
-        public int maxDamage;
         public int block;
         public int xp;
         public int weaponValue;
         public int playerLevel;
+        public Weapon characterWeapon;
 
-        public int modification = 0;
+        //modification in the calculations
+        public int modification = 2;
 
-        public enum PlayerClass { Knight, Solider, Warrior, Ranger };
-        public PlayerClass currentClass = PlayerClass.Warrior;
+        //player character selection
+        public enum PlayerCharacter { Knight, Solider, Warrior, Ranger };
+        public PlayerCharacter chosenCharacter = PlayerCharacter.Warrior;
 
-        public int GetHealth()
+
+        //life, power, get coins
+        public int MaxLife()
         {
-            int upper = (2 * modification + 5);
+            int upper = (2 * modification + 10);
             int lower = (modification + 2);
             return rand.Next(lower, upper);
         }

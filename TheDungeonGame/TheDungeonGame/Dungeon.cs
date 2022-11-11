@@ -10,7 +10,7 @@ namespace DungeonGame
 {
     public class Dungeon
     {
-        public static Player currentPlayer = new Player();
+        public static Character currentPlayer = new Character();
         public static bool mainLoop = true;
         static void Main(string[] args)
         {
@@ -18,6 +18,8 @@ namespace DungeonGame
             {
                 Directory.CreateDirectory("saves");
             }
+
+
             currentPlayer = Load(out bool newP);
             if (newP)
                 Rooms.FirstEncounter();
@@ -30,11 +32,15 @@ namespace DungeonGame
         }
 
         //method 
-        static Player NewStart(int i)
+        static Character NewStart(int i)
         {
             Console.Clear();
-            Player p = new Player();
+
+            //player new
+            Character gamePlayer = new Character();
             Console.ForegroundColor = ConsoleColor.DarkYellow;
+
+            //intro
             string titleGame = @"
                 
                 ██▄     ▄      ▄     ▄▀  ▄███▄   ████▄    ▄       ████▄ ▄████      ██▄   ████▄ ████▄ █▀▄▀█ 
@@ -56,7 +62,12 @@ namespace DungeonGame
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(titleGame);
             Console.WriteLine(gameDescription);
- 
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("Enter your name:");
+            string savedName = Console.ReadLine();
+
+
+            //player picks character
             string playerMenu = @"
             
                 --------------------------------
@@ -67,45 +78,93 @@ namespace DungeonGame
                 |  W) WARRIOR                  |
                 --------------------------------";
 
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("Enter your name:");
+            bool validPlayerChoice = false;
 
-            string savedName = Console.ReadLine();
-
-            Console.WriteLine("Choose your player:");
-            Console.WriteLine(playerMenu);
-            bool flag = false;
-
-            while (flag == false)
+            do
             {
-                flag = true;
-                string characterChoice = Console.ReadLine();
-                if (characterChoice == "K")
-                    p.currentClass = Player.PlayerClass.Knight;
-                else if (characterChoice == "R")
-                    p.currentClass = Player.PlayerClass.Ranger;
-                else if (characterChoice == "S")
-                    p.currentClass = Player.PlayerClass.Solider;
-                else if (characterChoice == "W")
-                    p.currentClass = Player.PlayerClass.Warrior;
-                else
-                {
-                    Console.WriteLine("Please enter K, R, S or W.");
-                    flag = false;
+
+                Console.WriteLine("Choose your character:");
+                Console.WriteLine(playerMenu);
+                ConsoleKey characterChoice = Console.ReadKey(intercept: true).Key;
+
+                switch (characterChoice)
+                { 
+                    //Knight
+                    case ConsoleKey.K:
+                        gamePlayer.chosenCharacter= Character.PlayerCharacter.Knight;
+                        Weapon doubleSword = new Weapon
+                        {
+                            WeaponName = "Double Edged Sword",
+                            WeaponMinDamage = 4,
+                            WeaponMaxDamage = 8,
+                            IsTwoHanded = true,
+                            BonusHitChance = 3,
+                        };
+                        validPlayerChoice = true;
+                        break;
+                    //Ranger
+                    case ConsoleKey.R:
+                        gamePlayer.chosenCharacter = Character.PlayerCharacter.Ranger;
+                        Weapon rifle = new Weapon
+                        {
+                            WeaponName = "Rifle",
+                            WeaponMinDamage = 3,
+                            WeaponMaxDamage = 8,
+                            IsTwoHanded = true,
+                            BonusHitChance = 3
+                        };
+                        validPlayerChoice = true;
+                        break;
+                    //Solider
+                    case ConsoleKey.S:
+                        gamePlayer.chosenCharacter = Character.PlayerCharacter.Solider;
+                        Weapon pistol = new Weapon
+                        {
+                            WeaponName = "Pistol",
+                            WeaponMinDamage = 5,
+                            WeaponMaxDamage = 10,
+                            IsTwoHanded = true,
+                            BonusHitChance = 2
+                        };
+                        validPlayerChoice = true;
+                        break;
+                    //Warrior
+                    case ConsoleKey.W:
+                        gamePlayer.chosenCharacter = Character.PlayerCharacter.Warrior;
+                        Weapon deathAxe = new Weapon
+                        {
+                            WeaponName = "Death Axe",
+                            WeaponMinDamage = 7,
+                            WeaponMaxDamage = 13,
+                            IsTwoHanded = true,
+                            BonusHitChance = 5
+                        };
+                      
+                        validPlayerChoice = true;
+                        break;
+                    default:
+                        Console.WriteLine("Please enter K, R, S or W.");
+                        break;
                 }
-            }
-            p.name = Console.ReadLine();
-            p.playerID = i;
+            } while (!validPlayerChoice);
+                
+            
+            gamePlayer.name = Console.ReadLine();
+            gamePlayer.playerID = i;
             Console.Clear();
-            return p;
+            return gamePlayer;
         }
 
+
+
+        //Quit & Save
         public static void Quit()
         {
             Save();
             Environment.Exit(0);
         }
 
+        //Save
         public static void Save()
         {
             BinaryFormatter binForm = new BinaryFormatter();
@@ -115,19 +174,20 @@ namespace DungeonGame
             file.Close();
         }
 
-        public static Player Load(out bool newP)
+        //method that establishes new player or pull previous player
+        public static Character Load(out bool newP)
         {
             newP = false;
             Console.Clear();
             string[] paths = Directory.GetFiles("saves");
-            List<Player> players = new List<Player>();
+            List<Character> players = new List<Character>();
             int idCount = 0;
 
             BinaryFormatter binForm = new BinaryFormatter();
             foreach (string p in paths)
             {
                 FileStream file = File.Open(p, FileMode.Open);
-                Player player = (Player)binForm.Deserialize(file);
+                Character player = (Character)binForm.Deserialize(file);
                 file.Close();
                 players.Add(player);
             }
@@ -137,9 +197,9 @@ namespace DungeonGame
             while (true)
             {
                 Console.Clear();
-                Print("Please enter player name or ID (id:# or Name). To create a new player, enter 'create'. ", 60); //the number is how fast it "types"
+                Print("Please enter player name or ID (id:# or Name). To create a new player, enter 'create'. ", 20); //the number is how fast it "types"
 
-                foreach (Player p in players)
+                foreach (Character p in players)
                 {
                     Console.WriteLine(p.playerID + " : " + p.name + " : Block Value:" + p.block + " : Weapon Value:" + p.weaponValue);
                 }
@@ -153,7 +213,7 @@ namespace DungeonGame
                     {
                         if (int.TryParse(enterInput[1], out int id))
                         {
-                            foreach (Player player in players)
+                            foreach (Character player in players)
                             {
                                 if (player.playerID == id)
                                 {
@@ -172,13 +232,13 @@ namespace DungeonGame
                     }
                     else if (enterInput[0] == "create")
                     {
-                        Player newPlayer = NewStart(idCount);
+                        Character newPlayer = NewStart(idCount);
                         newP = true;
                         return newPlayer;
                     }
                     else
                     {
-                        foreach (Player player in players)
+                        foreach (Character player in players)
                         {
                             if (player.name == enterInput[0])
                             {
@@ -197,10 +257,12 @@ namespace DungeonGame
                 }
             }
         }
-        public static void Print(string text, int speed = 40)
+
+        //fun method - words "type" and setting the speed
+        public static void Print(string text, int speed = 60)
         {
 
-            //you could create a sound SoundPlayer soundPlayer = new SoundPlayer("sounds/type.wav");
+            // could create a sound SoundPlayer soundPlayer = new SoundPlayer("sounds/type.wav");
             //soundPlayer.PlayLooping();
 
             foreach (char c in text)

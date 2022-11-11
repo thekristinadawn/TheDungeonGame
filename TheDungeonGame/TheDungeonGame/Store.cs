@@ -14,7 +14,7 @@ namespace DungeonGame
         static int difUpdate;
 
 
-        public static void LoadShop(Player p)
+        public static void LoadShop(Character p)
         {
             blockUpdate = p.block;
             weaponUpdate = p.weaponValue;
@@ -22,7 +22,7 @@ namespace DungeonGame
             RunShop(p);
         }
 
-        public static void RunShop(Player p)
+        public static void RunShop(Character p)
         {
             int blockPrice;
             int weaponPrice;
@@ -66,7 +66,7 @@ namespace DungeonGame
             }
         }
 
-        static void TryBuy(string item, int cost, Player p)
+        static void TryBuy(string item, int cost, Character p)
         {
             if (p.coins >= cost)
             {
